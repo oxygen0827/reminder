@@ -1,6 +1,8 @@
 node_modules/
 dist/
+electron-dist/
 *.db
 .env
 .DS_Store
 *.log
+.claude/

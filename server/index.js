@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./database');
 
@@ -190,6 +191,22 @@ app.get('/api/todos/due-soon', (req, res) => {
   
   res.json(todos.map(t => ({ ...t, completed: !!t.completed })));
 });
+
+// 提供前端静态文件
+// 优先使用 Electron 主进程设置的 DIST_DIR，否则回退到相对路径 ../dist
+const fs = require('fs');
+const distPath = process.env.DIST_DIR || path.join(__dirname, '../dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  // SPA 回退：所有非 /api 路由都返回 index.html
+  app.get(/^(?!\/api\/).*/, (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.status(503).send('前端文件未找到，请先运行 npm run build');
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Remind server running on http://localhost:${PORT}`);
