@@ -1,0 +1,8 @@
+node_modules/
+dist/
+server/todos.db
+server/ai-config.json
+server/chat-history.json
+server/user-memory.json
+*.local
+.env
